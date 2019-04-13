@@ -1,0 +1,28 @@
+{
+  "name": "serendip-griddb-provider",
+  "version": "1.0.10",
+  "description": "grided database provider for serendip framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test",
+    "start": "gulp"
+  },
+  "author": "Mohsen Esmaeili <m-esm@hotmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "@types/deep-diff": "^1.0.0",
+    "@types/mocha": "^5.2.6",
+    "@types/request": "^2.48.1",
+    "dotenv": "^7.0.0",
+    "fs-extra": "^7.0.1",
+    "gulp": "^4.0.0",
+    "gulp-mocha": "^6.0.0",
+    "gulp-typescript": "^5.0.0",
+    "run-sequence": "^2.2.1",
+    "serendip-business-model": "^1.1.7",
+    "typescript": "^3.3.3"
+  }
+}
