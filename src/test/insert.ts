@@ -17,17 +17,13 @@ describe("insert scenarios", () => {
       // runs before each test in this block
 
       provider = new GriddbProvider();
-      await provider.initiate({
-        mongoDb: process.env["db.mongoDb"],
-        mongoUrl: process.env["db.mongoUrl"],
-        authSource: process.env["db.authSource"],
-        user: process.env["db.user"],
-        password: process.env["db.password"]
-      });
-      
+      await provider.initiate();
+
       try {
         await provider.dropCollection("test");
-      } catch (error) {}
+      } catch (error) {
+        console.log("drop error", error);
+      }
       collection = await provider.collection("test");
 
       done();
@@ -47,6 +43,7 @@ describe("insert scenarios", () => {
   it("should get simple insert event", done => {
     (async () => {
       provider.events.test.on("insert", doc => {
+
         assert.equal(doc.hello, true);
         done();
       });

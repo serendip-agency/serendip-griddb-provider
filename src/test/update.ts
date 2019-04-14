@@ -6,7 +6,7 @@ import {
 } from "serendip-business-model";
 import * as fs from "fs-extra";
 import * as dotenv from "dotenv";
-import { MongodbProvider } from "../GriddbProvider";
+import { GriddbProvider } from "../GriddbProvider";
 
 describe("update scenarios", () => {
   let provider: DbProviderInterface;
@@ -15,15 +15,9 @@ describe("update scenarios", () => {
     (async () => {
       // runs before each test in this block
 
-      provider = new MongodbProvider();
+      provider = new GriddbProvider();
       try {
-        await provider.initiate({
-          mongoDb: process.env["db.mongoDb"],
-          mongoUrl: process.env["db.mongoUrl"],
-          authSource: process.env["db.authSource"],
-          user: process.env["db.user"],
-          password: process.env["db.password"]
-        });
+        await provider.initiate();
       } catch (error) {
         done(error);
       }

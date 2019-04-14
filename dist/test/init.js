@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const assert = require("assert");
 const dotenv = require("dotenv");
 const GriddbProvider_1 = require("../GriddbProvider");
 dotenv.config();
@@ -23,45 +22,15 @@ describe("insert scenarios", () => {
             try {
                 yield provider.dropCollection("test");
             }
-            catch (error) {
-                console.log("drop error", error);
-            }
+            catch (error) { }
             collection = yield provider.collection("test");
             done();
         }))();
     });
-    it("should do simple insert", done => {
+    it("should do simple initiate", done => {
         (() => __awaiter(this, void 0, void 0, function* () {
-            const model = yield collection.insertOne({
-                hello: true
-            });
-            assert.equal(model.hello, true);
-        }))()
-            .then(done)
-            .catch(done);
-    });
-    it("should get simple insert event", done => {
-        (() => __awaiter(this, void 0, void 0, function* () {
-            provider.events.test.on("insert", doc => {
-                assert.equal(doc.hello, true);
-                done();
-            });
-            const model = yield collection.insertOne({
-                hello: true
-            });
-            assert.equal(model.hello, true);
-        }))()
-            .then(() => { })
-            .catch(done);
-    });
-    it("should do insert with custom id", done => {
-        (() => __awaiter(this, void 0, void 0, function* () {
-            const model = yield collection.insertOne({
-                _id: "5c6e96da5da4508426d6f25b",
-                hello: true
-            });
-            assert.equal(model.hello, true);
-            assert.equal(model._id, "5c6e96da5da4508426d6f25b");
+            provider = new GriddbProvider_1.GriddbProvider();
+            yield provider.initiate();
         }))()
             .then(done)
             .catch(done);

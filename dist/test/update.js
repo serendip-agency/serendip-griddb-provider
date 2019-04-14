@@ -9,22 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = require("assert");
-const MongodbProvider_1 = require("../MongodbProvider");
+const GriddbProvider_1 = require("../GriddbProvider");
 describe("update scenarios", () => {
     let provider;
     let collection;
     beforeEach(done => {
         (() => __awaiter(this, void 0, void 0, function* () {
             // runs before each test in this block
-            provider = new MongodbProvider_1.MongodbProvider();
+            provider = new GriddbProvider_1.GriddbProvider();
             try {
-                yield provider.initiate({
-                    mongoDb: process.env["db.mongoDb"],
-                    mongoUrl: process.env["db.mongoUrl"],
-                    authSource: process.env["db.authSource"],
-                    user: process.env["db.user"],
-                    password: process.env["db.password"]
-                });
+                yield provider.initiate();
             }
             catch (error) {
                 done(error);

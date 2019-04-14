@@ -5,7 +5,8 @@ import {
 } from "serendip-business-model";
 import { EventEmitter } from "events";
 import { GriddbCollection } from ".";
-import { GriddbProviderOptions } from "./GriddbProviderOptions";
+import * as fs from "fs-extra";
+import * as request from "request";
 
 export class GriddbProvider implements DbProviderInterface {
   changes: DbCollectionInterface<EntityChangeModel>;
@@ -16,12 +17,45 @@ export class GriddbProvider implements DbProviderInterface {
   // you can listen for  any "update","delete","insert" event. each event emitter is accessible trough property named same as collectionName
   public events: { [key: string]: EventEmitter } = {};
   index: DbCollectionInterface<any>;
-  options: GriddbProviderOptions;
+  grid: {
+    infs: {
+      [key: string]: {
+        memory: number;
+        hard: number;
+        port: number;
+        address: number;
+        provider: string;
+        type: "peer" | "leech" | string;
+      };
+    };
+  };
 
   public async dropDatabase() {}
 
   public async dropCollection(name: string) {
-    return false;
+    for (const key in this.grid.infs) {
+      if (this.grid.infs.hasOwnProperty(key)) {
+        const node = this.grid.infs[key];
+        await new Promise((resolve, reject) => {
+          request(
+            "http://127.0.0.1:" +
+              node.port +
+              "/api/collection/" +
+              name +
+              "/dropCollection",
+            {
+              method: "post"
+            },
+            (err, res, body) => {
+              if (err) reject(err);
+
+              resolve(body);
+            }
+          );
+        });
+      }
+    }
+    return true;
   }
 
   public async collections(): Promise<string[]> {
@@ -29,7 +63,6 @@ export class GriddbProvider implements DbProviderInterface {
   }
 
   public async collection<T>(
-    
     collectionName: string,
     track?: boolean
   ): Promise<DbCollectionInterface<T>> {
@@ -37,17 +70,17 @@ export class GriddbProvider implements DbProviderInterface {
 
     return new GriddbCollection<T>(collectionName, track, this);
   }
-  async initiate(options: GriddbProviderOptions): Promise<void> {
+  async initiate(): Promise<void> {
     try {
-      this.options = options;
-
       this.index = await this.collection<any>("Index", false);
       this.changes = await this.collection<EntityChangeModel>(
         "EntityChanges",
         false
       );
 
-      console.log("\n\tInitiated grid db!\n");
+      this.grid = await fs.readJson(".grid.json");
+
+      //   console.log("\n\tInitiated grid db!\n", this.grid.infs);
     } catch (error) {
       throw new Error(
         "\n\nUnable to initiate grid db. Error details: \n" + error.message
