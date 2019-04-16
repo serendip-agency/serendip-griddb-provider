@@ -19,6 +19,9 @@ class GriddbProvider {
         // you can listen for  any "update","delete","insert" event. each event emitter is accessible trough property named same as collectionName
         this.events = {};
     }
+    stats() {
+        throw new Error("Method not implemented.");
+    }
     dropDatabase() {
         return __awaiter(this, void 0, void 0, function* () { });
     }
@@ -43,6 +46,33 @@ class GriddbProvider {
                 }
             }
             return true;
+        });
+    }
+    gridStats() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.grid.stats) {
+                this.grid.stats = {};
+            }
+            for (const key in this.grid.infs) {
+                if (this.grid.infs.hasOwnProperty(key)) {
+                    const node = this.grid.infs[key];
+                    try {
+                        const stats = yield new Promise((resolve, reject) => {
+                            request("http://127.0.0.1:" + node.port + "/api/db/stats", {
+                                method: "post",
+                                json: {}
+                            }, (err, res, body) => {
+                                if (err)
+                                    reject(err);
+                                resolve(body);
+                            });
+                        });
+                        this.grid.stats[key] = stats;
+                    }
+                    catch (error) { }
+                }
+            }
+            return this.grid.stats;
         });
     }
     collections() {

@@ -4,7 +4,6 @@ import {
 } from "serendip-business-model";
 import * as deep from "deep-diff";
 import * as request from "request";
-
 import { GriddbProvider } from "./GriddbProvider";
 import { EventEmitter } from "events";
 export class GriddbCollection<T> implements DbCollectionInterface<T> {
@@ -21,29 +20,38 @@ export class GriddbCollection<T> implements DbCollectionInterface<T> {
 
   private async post(url, model) {
     const returnedModels = [];
+    const returnedErrors = [];
     for (const key in this.provider.grid.infs) {
       if (this.provider.grid.infs.hasOwnProperty(key)) {
         const node = this.provider.grid.infs[key];
-        returnedModels.push(
-          await new Promise((resolve, reject) => {
-            request(
-              "http://127.0.0.1:" + node.port + url,
-              {
-                method: "post",
-                json: model
-              },
-              (err, res, body) => {
-                if (err) reject(err);
 
-                resolve(body);
-              }
-            );
-          })
-        );
+        try {
+          returnedModels.push(
+            await new Promise((resolve, reject) => {
+              request(
+                "http://127.0.0.1:" + node.port + url,
+                {
+                  method: "post",
+                  json: model
+                },
+                (err, res, body) => {
+                  if (err) return reject(err);
+
+                  resolve(body);
+                }
+              );
+            })
+          );
+        } catch (error) {
+          returnedErrors.push(error);
+        }
       }
     }
 
-    return returnedModels[0];
+    if (returnedModels[0]) return returnedModels[0];
+    else {
+      throw new Error(returnedErrors.join("\n\t"));
+    }
   }
 
   public async ensureIndex(fieldOrSpec: any, options: any) {
@@ -72,12 +80,15 @@ export class GriddbCollection<T> implements DbCollectionInterface<T> {
     userId?: string,
     trackOptions?: { metaOnly?: boolean }
   ): Promise<T> {
-    const doc = await this.post(`/api/collection/${this.collection}/updateOne`, {
-      model,
-      userId,
-      trackOptions,
-      collectionTrack: this.track
-    });
+    const doc = await this.post(
+      `/api/collection/${this.collection}/updateOne`,
+      {
+        model,
+        userId,
+        trackOptions,
+        collectionTrack: this.track
+      }
+    );
 
     this.provider.events[this.collection].emit("update", doc);
 

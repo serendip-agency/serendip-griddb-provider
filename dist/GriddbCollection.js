@@ -23,22 +23,32 @@ class GriddbCollection {
     post(url, model) {
         return __awaiter(this, void 0, void 0, function* () {
             const returnedModels = [];
+            const returnedErrors = [];
             for (const key in this.provider.grid.infs) {
                 if (this.provider.grid.infs.hasOwnProperty(key)) {
                     const node = this.provider.grid.infs[key];
-                    returnedModels.push(yield new Promise((resolve, reject) => {
-                        request("http://127.0.0.1:" + node.port + url, {
-                            method: "post",
-                            json: model
-                        }, (err, res, body) => {
-                            if (err)
-                                reject(err);
-                            resolve(body);
-                        });
-                    }));
+                    try {
+                        returnedModels.push(yield new Promise((resolve, reject) => {
+                            request("http://127.0.0.1:" + node.port + url, {
+                                method: "post",
+                                json: model
+                            }, (err, res, body) => {
+                                if (err)
+                                    return reject(err);
+                                resolve(body);
+                            });
+                        }));
+                    }
+                    catch (error) {
+                        returnedErrors.push(error);
+                    }
                 }
             }
-            return returnedModels[0];
+            if (returnedModels[0])
+                return returnedModels[0];
+            else {
+                throw new Error(returnedErrors.join("\n\t"));
+            }
         });
     }
     ensureIndex(fieldOrSpec, options) {

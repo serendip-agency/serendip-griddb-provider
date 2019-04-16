@@ -12,25 +12,21 @@ dotenv.config();
 describe("insert scenarios", () => {
   let provider: DbProviderInterface;
   let collection: DbCollectionInterface<any>;
-  beforeEach(done => {
-    (async () => {
-      // runs before each test in this block
 
-      provider = new GriddbProvider();
-      await provider.initiate();
-
-      try {
-        await provider.dropCollection("test");
-      } catch (error) {}
-      collection = await provider.collection("test");
-
-      done();
-    })();
-  });
   it("should do simple initiate", done => {
     (async () => {
-      provider = new GriddbProvider();
+      const provider = new GriddbProvider();
       await provider.initiate();
+    })()
+      .then(done)
+      .catch(done);
+  });
+
+  it("should get grid stats", done => {
+    (async () => {
+      const provider = new GriddbProvider();
+      await provider.initiate();
+      console.log(await provider.gridStats());
     })()
       .then(done)
       .catch(done);

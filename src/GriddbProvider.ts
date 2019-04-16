@@ -9,6 +9,18 @@ import * as fs from "fs-extra";
 import * as request from "request";
 
 export class GriddbProvider implements DbProviderInterface {
+  stats(): Promise<{
+    db: string;
+    collections: number;
+    indexes: number;
+    avgObjSizeByte: number;
+    objects: number;
+    storageMB: number;
+    fsUsedMB: number;
+    fsTotalMB: number;
+  }> {
+    throw new Error("Method not implemented.");
+  }
   changes: DbCollectionInterface<EntityChangeModel>;
   /**
    * Instance of mongodb database
@@ -18,6 +30,9 @@ export class GriddbProvider implements DbProviderInterface {
   public events: { [key: string]: EventEmitter } = {};
   index: DbCollectionInterface<any>;
   grid: {
+    stats: {
+      [key: string]: any;
+    };
     infs: {
       [key: string]: {
         memory: number;
@@ -56,6 +71,37 @@ export class GriddbProvider implements DbProviderInterface {
       }
     }
     return true;
+  }
+
+  async gridStats() {
+    if (!this.grid.stats) {
+      this.grid.stats = {};
+    }
+    for (const key in this.grid.infs) {
+      if (this.grid.infs.hasOwnProperty(key)) {
+        const node = this.grid.infs[key];
+
+        try {
+          const stats = await new Promise((resolve, reject) => {
+            request(
+              "http://127.0.0.1:" + node.port + "/api/db/stats",
+              {
+                method: "post",
+                json: {}
+              },
+              (err, res, body) => {
+                if (err) reject(err);
+
+                resolve(body);
+              }
+            );
+          });
+          this.grid.stats[key] = stats;
+        } catch (error) {}
+      }
+    }
+
+    return this.grid.stats;
   }
 
   public async collections(): Promise<string[]> {

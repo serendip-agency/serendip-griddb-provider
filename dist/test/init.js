@@ -14,23 +14,19 @@ dotenv.config();
 describe("insert scenarios", () => {
     let provider;
     let collection;
-    beforeEach(done => {
-        (() => __awaiter(this, void 0, void 0, function* () {
-            // runs before each test in this block
-            provider = new GriddbProvider_1.GriddbProvider();
-            yield provider.initiate();
-            try {
-                yield provider.dropCollection("test");
-            }
-            catch (error) { }
-            collection = yield provider.collection("test");
-            done();
-        }))();
-    });
     it("should do simple initiate", done => {
         (() => __awaiter(this, void 0, void 0, function* () {
-            provider = new GriddbProvider_1.GriddbProvider();
+            const provider = new GriddbProvider_1.GriddbProvider();
             yield provider.initiate();
+        }))()
+            .then(done)
+            .catch(done);
+    });
+    it("should get grid stats", done => {
+        (() => __awaiter(this, void 0, void 0, function* () {
+            const provider = new GriddbProvider_1.GriddbProvider();
+            yield provider.initiate();
+            console.log(yield provider.gridStats());
         }))()
             .then(done)
             .catch(done);
