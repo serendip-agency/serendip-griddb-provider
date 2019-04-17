@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const request = require("request");
 const events_1 = require("events");
 class GriddbCollection {
     constructor(collection, track, provider) {
@@ -20,40 +19,9 @@ class GriddbCollection {
         if (!provider.events[this.collection])
             provider.events[this.collection] = new events_1.EventEmitter();
     }
-    post(url, model) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const returnedModels = [];
-            const returnedErrors = [];
-            for (const key in this.provider.grid.infs) {
-                if (this.provider.grid.infs.hasOwnProperty(key)) {
-                    const node = this.provider.grid.infs[key];
-                    try {
-                        returnedModels.push(yield new Promise((resolve, reject) => {
-                            request("http://127.0.0.1:" + node.port + url, {
-                                method: "post",
-                                json: model
-                            }, (err, res, body) => {
-                                if (err)
-                                    return reject(err);
-                                resolve(body);
-                            });
-                        }));
-                    }
-                    catch (error) {
-                        returnedErrors.push(error);
-                    }
-                }
-            }
-            if (returnedModels[0])
-                return returnedModels[0];
-            else {
-                throw new Error(returnedErrors.join("\n\t"));
-            }
-        });
-    }
     ensureIndex(fieldOrSpec, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.post(`/api/collection/${this.collection}/ensureIndex`, {
+            return this.provider.post(`/api/collection/${this.collection}/ensureIndex`, {
                 fieldOrSpec,
                 options,
                 collectionTrack: this.track
@@ -61,7 +29,7 @@ class GriddbCollection {
         });
     }
     find(query, skip, limit) {
-        return this.post(`/api/collection/${this.collection}/find`, {
+        return this.provider.post(`/api/collection/${this.collection}/find`, {
             query,
             skip,
             limit,
@@ -69,14 +37,14 @@ class GriddbCollection {
         });
     }
     count(query) {
-        return this.post(`/api/collection/${this.collection}/count`, {
+        return this.provider.post(`/api/collection/${this.collection}/count`, {
             query,
             collectionTrack: this.track
         });
     }
     updateOne(model, userId, trackOptions) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doc = yield this.post(`/api/collection/${this.collection}/updateOne`, {
+            const doc = yield this.provider.post(`/api/collection/${this.collection}/updateOne`, {
                 model,
                 userId,
                 trackOptions,
@@ -88,7 +56,7 @@ class GriddbCollection {
     }
     deleteOne(_id, userId, trackOptions) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doc = yield this.post(`/api/collection/${this.collection}/deleteOne`, {
+            const doc = yield this.provider.post(`/api/collection/${this.collection}/deleteOne`, {
                 _id,
                 userId,
                 trackOptions,
@@ -100,7 +68,7 @@ class GriddbCollection {
     }
     insertOne(model, userId, trackOptions) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doc = yield this.post(`/api/collection/${this.collection}/insertOne`, {
+            const doc = yield this.provider.post(`/api/collection/${this.collection}/insertOne`, {
                 model,
                 userId,
                 trackOptions,

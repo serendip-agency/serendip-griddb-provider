@@ -20,13 +20,8 @@ describe("insert scenarios", () => {
             // runs before each test in this block
             provider = new GriddbProvider_1.GriddbProvider();
             yield provider.initiate();
-            try {
-                yield provider.dropCollection("test");
-            }
-            catch (error) {
-                console.log("drop error", error);
-            }
-            collection = yield provider.collection("test");
+            yield provider.dropCollection("insert_test");
+            collection = yield provider.collection("insert_test");
             done();
         }))();
     });
@@ -62,6 +57,21 @@ describe("insert scenarios", () => {
             });
             assert.equal(model.hello, true);
             assert.equal(model._id, "5c6e96da5da4508426d6f25b");
+        }))()
+            .then(done)
+            .catch(done);
+    });
+    it("should do more inserts", done => {
+        (() => __awaiter(this, void 0, void 0, function* () {
+            yield collection.insertOne({
+                d1: true
+            });
+            yield collection.insertOne({
+                d2: true
+            });
+            yield collection.insertOne({
+                d3: true
+            });
         }))()
             .then(done)
             .catch(done);

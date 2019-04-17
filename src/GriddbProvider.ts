@@ -45,32 +45,53 @@ export class GriddbProvider implements DbProviderInterface {
     };
   };
 
-  public async dropDatabase() {}
-
-  public async dropCollection(name: string) {
+  public async post(path: string, model: any) {
+    let returnedModel;
+    let returnedError;
     for (const key in this.grid.infs) {
       if (this.grid.infs.hasOwnProperty(key)) {
         const node = this.grid.infs[key];
-        await new Promise((resolve, reject) => {
-          request(
-            "http://127.0.0.1:" +
-              node.port +
-              "/api/collection/" +
-              name +
-              "/dropCollection",
-            {
-              method: "post"
-            },
-            (err, res, body) => {
-              if (err) reject(err);
 
-              resolve(body);
-            }
-          );
-        });
+        if (node.type == 'controller')
+          try {
+            returnedModel = (
+              await new Promise((resolve, reject) => {
+                request(
+                  node.address + path,
+                  {
+                    method: "post",
+                    json: model
+                  },
+                  (err, res, body) => {
+                    if (err) return reject(err);
+
+                    resolve(body);
+                  }
+                );
+              })
+            );
+            returnedError = null;
+            break;
+          } catch (error) {
+            returnedError = (error);
+          }
       }
     }
-    return true;
+
+    if (returnedError)
+      throw returnedError;
+
+    return returnedModel;
+
+  }
+
+
+  public async dropDatabase() { }
+
+  public async dropCollection(name: string) {
+
+    return this.post(`/api/collection/${name}/dropCollection`, {})
+
   }
 
   async gridStats() {
@@ -97,7 +118,7 @@ export class GriddbProvider implements DbProviderInterface {
             );
           });
           this.grid.stats[key] = stats;
-        } catch (error) {}
+        } catch (error) { }
       }
     }
 

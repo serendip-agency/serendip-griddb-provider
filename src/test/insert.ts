@@ -12,19 +12,16 @@ dotenv.config();
 describe("insert scenarios", () => {
   let provider: DbProviderInterface;
   let collection: DbCollectionInterface<any>;
+
   beforeEach(done => {
     (async () => {
       // runs before each test in this block
 
       provider = new GriddbProvider();
       await provider.initiate();
+      await provider.dropCollection("insert_test");
 
-      try {
-        await provider.dropCollection("test");
-      } catch (error) {
-        console.log("drop error", error);
-      }
-      collection = await provider.collection("test");
+      collection = await provider.collection("insert_test");
 
       done();
     })();
@@ -34,11 +31,15 @@ describe("insert scenarios", () => {
       const model = await collection.insertOne({
         hello: true
       });
+
+
       assert.equal(model.hello, true);
     })()
       .then(done)
       .catch(done);
   });
+
+  
 
   it("should get simple insert event", done => {
     (async () => {
@@ -54,7 +55,7 @@ describe("insert scenarios", () => {
 
       assert.equal(model.hello, true);
     })()
-      .then(() => {})
+      .then(() => { })
       .catch(done);
   });
 
@@ -71,4 +72,28 @@ describe("insert scenarios", () => {
       .then(done)
       .catch(done);
   });
+
+
+  it("should do more inserts", done => {
+    (async () => {
+      await collection.insertOne({
+        d1: true
+      });
+
+      await collection.insertOne({
+        d2: true
+      });
+
+      await collection.insertOne({
+        d3: true
+      });
+
+
+
+    })()
+      .then(done)
+      .catch(done);
+  });
+
+
 });

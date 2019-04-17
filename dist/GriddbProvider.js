@@ -22,30 +22,44 @@ class GriddbProvider {
     stats() {
         throw new Error("Method not implemented.");
     }
+    post(path, model) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let returnedModel;
+            let returnedError;
+            for (const key in this.grid.infs) {
+                if (this.grid.infs.hasOwnProperty(key)) {
+                    const node = this.grid.infs[key];
+                    if (node.type == 'controller')
+                        try {
+                            returnedModel = (yield new Promise((resolve, reject) => {
+                                request(node.address + path, {
+                                    method: "post",
+                                    json: model
+                                }, (err, res, body) => {
+                                    if (err)
+                                        return reject(err);
+                                    resolve(body);
+                                });
+                            }));
+                            returnedError = null;
+                            break;
+                        }
+                        catch (error) {
+                            returnedError = (error);
+                        }
+                }
+            }
+            if (returnedError)
+                throw returnedError;
+            return returnedModel;
+        });
+    }
     dropDatabase() {
         return __awaiter(this, void 0, void 0, function* () { });
     }
     dropCollection(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            for (const key in this.grid.infs) {
-                if (this.grid.infs.hasOwnProperty(key)) {
-                    const node = this.grid.infs[key];
-                    yield new Promise((resolve, reject) => {
-                        request("http://127.0.0.1:" +
-                            node.port +
-                            "/api/collection/" +
-                            name +
-                            "/dropCollection", {
-                            method: "post"
-                        }, (err, res, body) => {
-                            if (err)
-                                reject(err);
-                            resolve(body);
-                        });
-                    });
-                }
-            }
-            return true;
+            return this.post(`/api/collection/${name}/dropCollection`, {});
         });
     }
     gridStats() {
