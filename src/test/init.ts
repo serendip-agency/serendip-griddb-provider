@@ -9,7 +9,7 @@ import * as dotenv from "dotenv";
 import { GriddbProvider } from "../GriddbProvider";
 
 dotenv.config();
-describe("insert scenarios", () => {
+describe("init scenarios", () => {
   let provider: DbProviderInterface;
   let collection: DbCollectionInterface<any>;
 
@@ -26,7 +26,10 @@ describe("insert scenarios", () => {
     (async () => {
       const provider = new GriddbProvider();
       await provider.initiate();
-      console.log(await provider.gridStats());
+
+      console.log('\t GridStats: ', await provider.gridStats());
+
+
     })()
       .then(done)
       .catch(done);

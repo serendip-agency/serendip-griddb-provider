@@ -24,7 +24,7 @@ describe("update scenarios", () => {
 
       try {
         await provider.dropCollection("test");
-      } catch (error) {}
+      } catch (error) { }
       collection = await provider.collection("test");
 
       done();
@@ -46,7 +46,20 @@ describe("update scenarios", () => {
 
       done();
     })()
-      .then(() => {})
+      .then(() => { })
+      .catch(done);
+  });
+
+
+  it("should upsert", done => {
+    (async () => {
+
+
+      await collection.updateOne({ upserted: true });
+
+      done();
+    })()
+      .then(() => { })
       .catch(done);
   });
 
@@ -60,7 +73,7 @@ describe("update scenarios", () => {
 
       model.hello = false;
 
-      provider.events.test.on("update", doc => {
+      provider.events["test"].on("update", doc => {
         assert.equal(model.hello, false);
         assert.equal(model._id.toString(), doc._id.toString());
         done();
@@ -70,7 +83,22 @@ describe("update scenarios", () => {
 
       assert.equal(model.hello, false);
     })()
-      .then(() => {})
+      .then(() => { })
+      .catch(done);
+  });
+
+
+  it("should do more upserts", done => {
+    (async () => {
+
+      await collection.updateOne({ upserted1: true });
+      await collection.updateOne({ upserted2: true });
+      await collection.updateOne({ upserted3: true });
+      await collection.updateOne({ upserted4: true });
+
+      done();
+    })()
+      .then(() => { })
       .catch(done);
   });
 });

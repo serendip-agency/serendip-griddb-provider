@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = require("dotenv");
 const GriddbProvider_1 = require("../GriddbProvider");
 dotenv.config();
-describe("insert scenarios", () => {
+describe("init scenarios", () => {
     let provider;
     let collection;
     it("should do simple initiate", done => {
@@ -26,7 +26,7 @@ describe("insert scenarios", () => {
         (() => __awaiter(this, void 0, void 0, function* () {
             const provider = new GriddbProvider_1.GriddbProvider();
             yield provider.initiate();
-            console.log(yield provider.gridStats());
+            console.log('\t GridStats: ', yield provider.gridStats());
         }))()
             .then(done)
             .catch(done);

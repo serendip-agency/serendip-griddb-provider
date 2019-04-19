@@ -19,9 +19,9 @@ describe("insert scenarios", () => {
 
       provider = new GriddbProvider();
       await provider.initiate();
-      await provider.dropCollection("insert_test");
+      await provider.dropCollection("test");
 
-      collection = await provider.collection("insert_test");
+      collection = await provider.collection("test");
 
       done();
     })();
@@ -39,11 +39,11 @@ describe("insert scenarios", () => {
       .catch(done);
   });
 
-  
+
 
   it("should get simple insert event", done => {
     (async () => {
-      provider.events.test.on("insert", doc => {
+      provider.events["test"].on("insert", doc => {
 
         assert.equal(doc.hello, true);
         done();
@@ -74,26 +74,21 @@ describe("insert scenarios", () => {
   });
 
 
-  it("should do more inserts", done => {
-    (async () => {
-      await collection.insertOne({
-        d1: true
-      });
+  // it("should do more inserts", done => {
+  //   (async () => {
+  //     const test = (fs.readFileSync('test.jpg', { encoding: 'base64' }));
+  //     for (let index = 0; index < 10; index++) {
 
-      await collection.insertOne({
-        d2: true
-      });
+  //       await collection.insertOne({
+  //         index,
+  //         test
+  //       });
+  //     }
 
-      await collection.insertOne({
-        d3: true
-      });
-
-
-
-    })()
-      .then(done)
-      .catch(done);
-  });
+  //   })()
+  //     .then(done)
+  //     .catch(done);
+  // }).timeout(0);
 
 
 });

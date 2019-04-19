@@ -12,7 +12,7 @@ const assert = require("assert");
 const dotenv = require("dotenv");
 const GriddbProvider_1 = require("../GriddbProvider");
 dotenv.config();
-describe("insert scenarios", () => {
+describe("find scenarios", () => {
     let provider;
     let collection;
     beforeEach(done => {
@@ -25,53 +25,58 @@ describe("insert scenarios", () => {
             done();
         }))();
     });
-    it("should do simple insert", done => {
+    it("should do simple find", done => {
         (() => __awaiter(this, void 0, void 0, function* () {
-            const model = yield collection.insertOne({
-                hello: true
-            });
-            assert.equal(model.hello, true);
+            for (let i = 0; i < 10; i++) {
+                yield collection.insertOne({
+                    hello: true
+                });
+            }
+            const model = yield collection.find({ hello: true });
+            assert.equal(model.length, 10);
         }))()
             .then(done)
             .catch(done);
     });
-    it("should get simple insert event", done => {
+    it("should do $gte find", done => {
         (() => __awaiter(this, void 0, void 0, function* () {
-            provider.events["test"].on("insert", doc => {
-                assert.equal(doc.hello, true);
-                done();
-            });
-            const model = yield collection.insertOne({
-                hello: true
-            });
-            assert.equal(model.hello, true);
-        }))()
-            .then(() => { })
-            .catch(done);
-    });
-    it("should do insert with custom id", done => {
-        (() => __awaiter(this, void 0, void 0, function* () {
-            const model = yield collection.insertOne({
-                _id: "5c6e96da5da4508426d6f25b",
-                hello: true
-            });
-            assert.equal(model.hello, true);
-            assert.equal(model._id, "5c6e96da5da4508426d6f25b");
+            for (let i = 0; i < 10; i++) {
+                yield collection.insertOne({
+                    number: i
+                });
+            }
+            const model = yield collection.find({ number: { $gte: 5 } });
+            assert.equal(model.length, 5);
         }))()
             .then(done)
             .catch(done);
     });
-    // it("should do more inserts", done => {
-    //   (async () => {
-    //     const test = (fs.readFileSync('test.jpg', { encoding: 'base64' }));
-    //     for (let index = 0; index < 10; index++) {
-    //       await collection.insertOne({
-    //         index,
-    //         test
-    //       });
-    //     }
-    //   })()
-    //     .then(done)
-    //     .catch(done);
-    // }).timeout(0);
+    it("should do $elemMatch find on subarray", done => {
+        (() => __awaiter(this, void 0, void 0, function* () {
+            for (let i = 0; i < 10; i++) {
+                yield collection.insertOne({
+                    numbers: [i]
+                });
+            }
+            const model = yield collection.find({ numbers: { $elemMatch: { $gte: 5 } } });
+            assert.equal(model.length, 5);
+        }))()
+            .then(done)
+            .catch(done);
+    });
+    it("should do $elemMatch find on sub object-array", done => {
+        (() => __awaiter(this, void 0, void 0, function* () {
+            for (let i = 0; i < 10; i++) {
+                yield collection.insertOne({
+                    numbers: [{
+                            n: i
+                        }]
+                });
+            }
+            const model = yield collection.find({ numbers: { $elemMatch: { n: { $gte: 5 } } } });
+            assert.equal(model.length, 5);
+        }))()
+            .then(done)
+            .catch(done);
+    });
 });

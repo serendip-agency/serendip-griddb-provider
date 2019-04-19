@@ -45,6 +45,14 @@ describe("update scenarios", () => {
             .then(() => { })
             .catch(done);
     });
+    it("should upsert", done => {
+        (() => __awaiter(this, void 0, void 0, function* () {
+            yield collection.updateOne({ upserted: true });
+            done();
+        }))()
+            .then(() => { })
+            .catch(done);
+    });
     it("should get update event", done => {
         (() => __awaiter(this, void 0, void 0, function* () {
             let model = yield collection.insertOne({
@@ -52,13 +60,24 @@ describe("update scenarios", () => {
             });
             assert.equal(model.hello, true);
             model.hello = false;
-            provider.events.test.on("update", doc => {
+            provider.events["test"].on("update", doc => {
                 assert.equal(model.hello, false);
                 assert.equal(model._id.toString(), doc._id.toString());
                 done();
             });
             model = yield collection.updateOne(model);
             assert.equal(model.hello, false);
+        }))()
+            .then(() => { })
+            .catch(done);
+    });
+    it("should do more upserts", done => {
+        (() => __awaiter(this, void 0, void 0, function* () {
+            yield collection.updateOne({ upserted1: true });
+            yield collection.updateOne({ upserted2: true });
+            yield collection.updateOne({ upserted3: true });
+            yield collection.updateOne({ upserted4: true });
+            done();
         }))()
             .then(() => { })
             .catch(done);
