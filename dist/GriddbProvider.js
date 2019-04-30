@@ -105,7 +105,7 @@ class GriddbProvider {
             try {
                 this.index = yield this.collection("Index", false);
                 this.changes = yield this.collection("EntityChanges", false);
-                this.grid = yield fs.readJson(".grid.json");
+                this.grid = process.env.grid ? JSON.parse(process.env.grid) : yield fs.readJson(".grid.json");
                 //   console.log("\n\tInitiated grid db!\n", this.grid.infs);
             }
             catch (error) {

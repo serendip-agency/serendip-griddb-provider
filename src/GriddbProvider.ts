@@ -145,7 +145,7 @@ export class GriddbProvider implements DbProviderInterface {
         false
       );
 
-      this.grid = await fs.readJson(".grid.json");
+      this.grid = process.env.grid ? JSON.parse(process.env.grid) : await fs.readJson(".grid.json");
 
       //   console.log("\n\tInitiated grid db!\n", this.grid.infs);
     } catch (error) {

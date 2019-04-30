@@ -1,6 +1,6 @@
 {
   "name": "serendip-griddb-provider",
-  "version": "1.0.10",
+  "version": "1.0.0",
   "description": "grided database provider for serendip framework",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,8 @@
     "gulp-mocha": "^6.0.0",
     "gulp-typescript": "^5.0.0",
     "run-sequence": "^2.2.1",
-    "serendip-business-model": "^1.1.7",
+    "serendip": "^1.1.19",
+    "serendip-business-model": "^1.1.12",
     "typescript": "^3.3.3"
   }
 }
